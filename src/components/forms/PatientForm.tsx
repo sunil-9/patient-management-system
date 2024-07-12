@@ -7,11 +7,8 @@ import { z } from "zod";
 import CustomFormField from "../custom/CustomFormField";
 import SubmitButton from "../custom/SubmitButton";
 import { Form } from "./../ui/form";
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-});
+import { UserFormValidation } from "@/lib/validation";
+
 export enum FormFieldTypes {
   INPUT = "input",
   TEXTAREA = "textarea",
@@ -27,17 +24,26 @@ export enum FormFieldTypes {
 const PatientForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof UserFormValidation>>({
+    resolver: zodResolver(UserFormValidation),
     defaultValues: {
-      username: "",
+      name: "",
+      email:"",
+      phone:""
     },
   });
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof UserFormValidation>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    setIsLoading(true);
+    try {
+      // Make an API request or something.
+      const userData = {name:values.name, email:values.email, phone:values.phone};
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -46,7 +52,7 @@ const PatientForm = () => {
         <section className="mb-12 space-y-4">
           <h1 className="header">Hi there 👋</h1>
           <p className="text-dark-700">
-            Let get started by setting up your account. You will be able to
+            Let&rsquo;s get started by setting up your account. You will be able to
             manage your health records and appointments.
           </p>
         </section>
